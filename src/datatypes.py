@@ -23,13 +23,13 @@ class RadialElectronDensity(ElectronDensityVolume):
         # Radial density with coords r, phi, psi
         self.density = xr.DataArray(
             data = np.ones(
-                (self.resolution["r"], self.resolution["phi"], self.resolution["psi"])
+                (self.resolution["r"], self.resolution["theta"], self.resolution["phi"])
             ),
-            dims = ["r", "phi", "psi"],
+            dims = ["r", "theta", "phi"],
             coords={
                 "r": np.linspace(0, 1, self.resolution["r"]),
-                "phi": np.linspace(0, 2*np.pi, self.resolution["phi"]),
-                "psi": np.linspace(0, np.pi, self.resolution["psi"])
+                "theta": np.linspace(0, 2*np.pi, self.resolution["theta"]),
+                "phi": np.linspace(0, np.pi, self.resolution["phi"])
             },
             attrs = {
                 "resolution": self.resolution,

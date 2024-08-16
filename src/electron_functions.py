@@ -3,7 +3,7 @@ import scipy
 from src import definitions as d
 
 @np.vectorize(excluded=["n", "l", "m"])
-def wavefunction(n: int, l: int, m: int, r: float, phi: float, theta: float) -> float:
+def wavefunction(n: int, l: int, m: int, r: float, theta: float, phi: float) -> float:
     """
     Returns the wavefunction for a given electron in a hydrogen atom in radial coordinates.
     For quantum numbers n, l, and m, and spherical coordinates r, phi, and theta.
@@ -34,3 +34,21 @@ def wavefunction(n: int, l: int, m: int, r: float, phi: float, theta: float) -> 
     
     return _prefactor(n, l) * _rho_terms(n, l) * _spherical_harmonic_term(l, m, phi, theta)
 
+@np.vectorize
+def convert_radial_to_cartesian(r, theta, phi):
+    """
+    Converts radial coordinates to cartesian coordinates.
+
+    args:
+    r: float, radial coordinate
+    theta: float, polar angle
+    phi: float, azimuthal angle
+
+    returns:
+    tuple, (x, y, z) cartesian coordinates
+    """
+    x = r * np.sin(theta) * np.cos(phi)
+    y = r * np.sin(theta) * np.sin(phi)
+    z = r * np.cos(theta)
+
+    return x, y, z
