@@ -1,7 +1,7 @@
 from . import datatypes
-from . import wavefunctions
+from . import electron_functions
 
 __all__ = [
     "datatypes",
-    "wavefunctions"
+    "electron_functions"
 ]
