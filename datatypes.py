@@ -18,7 +18,7 @@ class RadialElectronDensity(ElectronDensityVolume):
 
     # Radial density with coords r, phi, psi
     density = xr.DataArray(
-        data = np.zeros(
+        data = np.ones(
             (resolution["r"], resolution["phi"], resolution["psi"])
         ),
         dims = ["r", "phi", "psi"],
@@ -32,7 +32,10 @@ class RadialElectronDensity(ElectronDensityVolume):
         }
     )
 
-    
+    def __attrs_post_init__(self):
+        self._normalize()
+
+
 
 
 @attrs.define
@@ -55,3 +58,6 @@ class CartesianElectronDensity(ElectronDensityVolume):
             "resolution": resolution,
         }
     )
+
+    def __attrs_post_init__(self):
+        self._normalize()
