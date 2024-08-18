@@ -1,4 +1,4 @@
-from orbitals import datatypes
+from src import datatypes
 import pytest
 
 def test_RadialElectronDensity():
@@ -12,6 +12,20 @@ def test_RadialElectronDensity():
     assert density.density.coords["psi"].shape == 100
     assert density.density.attrs["resolution"] == resolution
 
+    assert sum(density.data) == 1
+
+    clipped_density = density.get_clipped_density(0.5)
+    assert clipped_density.shape == (100, 100, 100)
+
+    meshgrid = density.meshgrid_coords()
+    assert len(meshgrid) == 3
+    
+    # xx, yy, zz
+    assert meshgrid[0].shape == (100, 100, 100)
+    assert meshgrid[1].shape == (100, 100, 100)
+    assert meshgrid[2].shape == (100, 100, 100)
+
+
 def test_CartesianElectronDensity():
     resolution = {"x": 100, "y": 100, "z": 100}
     density = datatypes.CartesianElectronDensity(resolution=resolution)
@@ -22,3 +36,17 @@ def test_CartesianElectronDensity():
     assert density.density.coords["y"].shape == 100
     assert density.density.coords["z"].shape == 100
     assert density.density.attrs["resolution"] == resolution
+
+    assert sum(density.data) == 1
+
+    clipped_density = density.get_clipped_density(0.5)
+    assert clipped_density.shape == (100, 100, 100)
+
+    meshgrid = density.meshgrid_coords()
+    assert len(meshgrid) == 3
+
+    # xx, yy, zz
+    assert meshgrid[0].shape == (100, 100, 100)
+    assert meshgrid[1].shape == (100, 100, 100)
+    assert meshgrid[2].shape == (100, 100, 100)
+

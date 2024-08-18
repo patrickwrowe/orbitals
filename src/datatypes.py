@@ -19,9 +19,38 @@ class ElectronDensityVolume:
             self.density.coords["y"],
             self.density.coords["z"],
         )
+    
+    def get_clipped_density(self, threshold: float):
+        """
+        Returns the electron density clipped to a threshold value.
+        
+        args:
+        threshold: float, threshold value
+        
+        returns:
+        np.ndarray, clipped electron density
+        """
+
+        electron_density = np.absolute(self.density.data) ** 2
+
+        dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
+        abs_threshold = threshold * dens_range
+
+        return np.where(electron_density < abs_threshold, np.nan, electron_density)
 
 @attrs.define
 class RadialElectronDensity(ElectronDensityVolume):
+    """
+    Radial electron density class.
+    
+    args:
+    resolution: dict, resolution of the density
+    r_max: int, maximum radius of the density
+    
+    attrs:
+    density: xarray.DataArray, radial electron density
+    """
+
 
     # Radial density with coords r, phi, psi
     resolution: dict 
@@ -47,8 +76,33 @@ class RadialElectronDensity(ElectronDensityVolume):
         
         self._normalize()
 
+    def eval_density(self, n: int, l: int, m: int):
+        rr, tt, pp = np.meshgrid(
+            self.density.coords["r"],
+            self.density.coords["theta"],
+            self.density.coords["phi"],
+        )
+
+        self.density.data = electron_functions.wavefunction(
+            n, l, m, rr, tt, pp
+        )
+
+        self._normalize()
+
+
 @attrs.define
 class CartesianElectronDensity(ElectronDensityVolume):
+    """
+    Cartesian electron density class.
+    
+    args:
+    resolution: dict, resolution of the density
+    r_max: int, maximum radius of the density
+    
+    attrs:
+    density: xarray.DataArray, radial electron density
+    """
+    
 
     # Cartesian density with coords x, y, z
     resolution: dict
@@ -91,15 +145,3 @@ class CartesianElectronDensity(ElectronDensityVolume):
         )
 
         self._normalize()
-    
-    def get_clipped_density(self, threshold: float):
-
-        electron_density = np.absolute(self.density.data) ** 2
-
-        dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
-        abs_threshold = threshold * dens_range
-
-        print(dens_range)
-        print(abs_threshold)
-
-        return np.where(electron_density < abs_threshold, np.nan, electron_density)
