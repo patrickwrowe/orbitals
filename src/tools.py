@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 
+
 @np.vectorize
 def convert_radial_to_cartesian(r, theta, phi):
     """
@@ -19,6 +20,7 @@ def convert_radial_to_cartesian(r, theta, phi):
     z = r * np.cos(phi)
 
     return x, y, z
+
 
 @np.vectorize
 def convert_cartesian_to_radial(x, y, z):
@@ -39,13 +41,14 @@ def convert_cartesian_to_radial(x, y, z):
 
     return r, theta, phi
 
+
 def clip_density(density: xr.DataArray, threshold: float):
     """
     Returns the electron density clipped to a threshold value.
-    
+
     args:
     threshold: float, threshold value
-    
+
     returns:
     np.ndarray, clipped electron density
     """
