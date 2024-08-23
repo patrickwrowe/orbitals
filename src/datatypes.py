@@ -20,6 +20,9 @@ class ElectronDensityVolume:
             self.density.coords["y"],
             self.density.coords["z"],
         )
+    
+    def get_density(self):
+        return np.absolute(self.density.data) ** 2
 
 
 @attrs.define
