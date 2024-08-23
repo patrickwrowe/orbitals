@@ -19,24 +19,6 @@ class ElectronDensityVolume:
             self.density.coords["y"],
             self.density.coords["z"],
         )
-    
-    def get_clipped_density(self, threshold: float):
-        """
-        Returns the electron density clipped to a threshold value.
-        
-        args:
-        threshold: float, threshold value
-        
-        returns:
-        np.ndarray, clipped electron density
-        """
-
-        electron_density = np.absolute(self.density.data) ** 2
-
-        dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
-        abs_threshold = threshold * dens_range
-
-        return np.where(electron_density < abs_threshold, np.nan, electron_density)
 
 @attrs.define
 class RadialElectronDensity(ElectronDensityVolume):

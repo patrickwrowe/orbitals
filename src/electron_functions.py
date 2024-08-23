@@ -71,3 +71,22 @@ def convert_cartesian_to_radial(x, y, z):
     phi = np.arccos(z / r)
 
     return r, theta, phi
+
+@np.vectorize
+def get_clipped_density(density: np.ndarray, threshold: float):
+    """
+    Returns the electron density clipped to a threshold value.
+    
+    args:
+    threshold: float, threshold value
+    
+    returns:
+    np.ndarray, clipped electron density
+    """
+
+    electron_density = np.absolute(density.data) ** 2
+
+    dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
+    abs_threshold = threshold * dens_range
+
+    return np.where(electron_density < abs_threshold, np.nan, electron_density)

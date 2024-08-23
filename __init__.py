@@ -1,6 +1,10 @@
 import os, sys
-from src import datatypes
-from src import electron_functions
+from src import (
+    datatypes,
+    definitions,
+    electron_functions,
+    tools
+)
 
 root_dir = os.getcwd()
 sys.path.append(root_dir)
@@ -9,10 +13,7 @@ __name__ = "orbitals"
 
 __all__ = [
     "datatypes",
-    "electron_functions"
+    "electron_functions",
+    "definitions",
+    "tools"
 ]
-
-def eval_wavefunction(n, l, m, resolution):
-    radialdensity = datatypes.RadialElectronDensity(resolution=resolution)
-
-    radialdensity.density.data = electron_functions.wavefunction(n, l, m, radialdensity.density.coords["r"], radialdensity.density.coords["phi"], radialdensity.density.coords["psi"])
