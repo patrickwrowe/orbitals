@@ -1,9 +1,9 @@
 from src import datatypes
 import pytest
 
-def test_RadialElectronDensity():
+def test_RadialWavefunction():
     resolution = {"r": 100, "phi": 100, "psi": 100}
-    density = datatypes.RadialElectronDensity(resolution=resolution)
+    density = datatypes.RadialWavefunction(resolution=resolution)
     assert density.resolution == resolution
     assert density.density.shape == (100, 100, 100)
     assert density.density.dims == ("r", "phi", "psi")
@@ -26,9 +26,9 @@ def test_RadialElectronDensity():
     assert meshgrid[2].shape == (100, 100, 100)
 
 
-def test_CartesianElectronDensity():
+def test_CartesianWavefunction():
     resolution = {"x": 100, "y": 100, "z": 100}
-    density = datatypes.CartesianElectronDensity(resolution=resolution)
+    density = datatypes.CartesianWavefunction(resolution=resolution)
     assert density.resolution == resolution
     assert density.density.shape == (100, 100, 100)
     assert density.density.dims == ("x", "y", "z")

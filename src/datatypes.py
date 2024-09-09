@@ -7,7 +7,7 @@ from src import electron_functions
 
 
 @attrs.define
-class ElectronDensityVolume:
+class WavefunctionVolume:
     resolution: dict
     r_max: int = 1
 
@@ -26,7 +26,7 @@ class ElectronDensityVolume:
 
 
 @attrs.define
-class RadialElectronDensity(ElectronDensityVolume):
+class RadialWavefunction(WavefunctionVolume):
     """
     Radial electron density class.
 
@@ -75,7 +75,7 @@ class RadialElectronDensity(ElectronDensityVolume):
 
 
 @attrs.define
-class CartesianElectronDensity(ElectronDensityVolume):
+class CartesianWavefunction(WavefunctionVolume):
     """
     Cartesian electron density class.
 
