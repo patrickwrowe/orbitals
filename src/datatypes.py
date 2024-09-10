@@ -12,43 +12,49 @@ class WavefunctionVolume:
     r_max: int = 1
 
     def _normalize(self):
-        self.density.data = self.density.data / np.nansum(self.density.data)
+        self.wavefunction.data = self.wavefunction.data / np.nansum(self.wavefunction.data)
 
     def meshgrid_coords(self):
         return np.meshgrid(
-            self.density.coords["x"],
-            self.density.coords["y"],
-            self.density.coords["z"],
+            self.wavefunction.coords["x"],
+            self.wavefunction.coords["y"],
+            self.wavefunction.coords["z"],
         )
     
     def get_density(self):
-        return np.absolute(self.density.data) ** 2
+        return np.absolute(self.wavefunction.data) ** 2
     
     def get_wavefunction(self):
-        return self.density.data
+        return self.wavefunction.data
+    
+    def get_coords(self):
+        return self.wavefunction.coords
+    
+    def get_dims(self):
+        return self.wavefunction.dims
 
 
 @attrs.define
 class RadialWavefunction(WavefunctionVolume):
     """
-    Radial electron density class.
+    Radial electron wavefunction class.
 
     args:
-    resolution: dict, resolution of the density
-    r_max: int, maximum radius of the density
+    resolution: dict, resolution of the wavefunction
+    r_max: int, maximum radius of the wavefunction
 
     attrs:
-    density: xarray.DataArray, radial electron density
+    wavefunction: xarray.DataArray, radial electron wavefunction
     """
 
-    # Radial density with coords r, phi, psi
+    # Radial wavefunction with coords r, phi, psi
     resolution: dict
 
-    density = attrs.field(init=False)
+    wavefunction = attrs.field(init=False)
 
     def __attrs_post_init__(self):
-        # Radial density with coords r, phi, psi
-        self.density = xr.DataArray(
+        # Radial wavefunction with coords r, phi, psi
+        self.wavefunction = xr.DataArray(
             data=np.ones(
                 (self.resolution["r"], self.resolution["theta"], self.resolution["phi"])
             ),
@@ -65,14 +71,14 @@ class RadialWavefunction(WavefunctionVolume):
 
         self._normalize()
 
-    def eval_density(self, n: int, l: int, m: int):
+    def eval_wavefunction(self, n: int, l: int, m: int):
         rr, tt, pp = np.meshgrid(
-            self.density.coords["r"],
-            self.density.coords["theta"],
-            self.density.coords["phi"],
+            self.wavefunction.coords["r"],
+            self.wavefunction.coords["theta"],
+            self.wavefunction.coords["phi"],
         )
 
-        self.density.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
+        self.wavefunction.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
 
         self._normalize()
 
@@ -80,24 +86,24 @@ class RadialWavefunction(WavefunctionVolume):
 @attrs.define
 class CartesianWavefunction(WavefunctionVolume):
     """
-    Cartesian electron density class.
+    Cartesian electron wavefunction class.
 
     args:
-    resolution: dict, resolution of the density
-    r_max: int, maximum radius of the density
+    resolution: dict, resolution of the wavefunction
+    r_max: int, maximum radius of the wavefunction
 
     attrs:
-    density: xarray.DataArray, radial electron density
+    wavefunction: xarray.DataArray, radial electron wavefunction
     """
 
-    # Cartesian density with coords x, y, z
+    # Cartesian wavefunction with coords x, y, z
     resolution: dict
 
-    # Cartesian density with coords x, y, z
-    density = attrs.field(init=False)
+    # Cartesian wavefunction with coords x, y, z
+    wavefunction = attrs.field(init=False)
 
     def __attrs_post_init__(self):
-        self.density = xr.DataArray(
+        self.wavefunction = xr.DataArray(
             data=np.ones(
                 (self.resolution["x"], self.resolution["y"], self.resolution["z"])
             ),
@@ -114,15 +120,15 @@ class CartesianWavefunction(WavefunctionVolume):
 
         self._normalize()
 
-    def eval_density(self, n: int, l: int, m: int):
+    def eval_wavefunction(self, n: int, l: int, m: int):
         xx, yy, zz = np.meshgrid(
-            self.density.coords["x"],
-            self.density.coords["y"],
-            self.density.coords["z"],
+            self.wavefunction.coords["x"],
+            self.wavefunction.coords["y"],
+            self.wavefunction.coords["z"],
         )
 
         rr, tt, pp = electron_functions.convert_cartesian_to_radial(xx, yy, zz)
 
-        self.density.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
+        self.wavefunction.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
 
         self._normalize()

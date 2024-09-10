@@ -43,7 +43,7 @@ def convert_cartesian_to_radial(x, y, z):
     return r, theta, phi
 
 
-def clip_density(density: datatypes.WavefunctionVolume, threshold: float):
+def clip_density(wavefunction: datatypes.WavefunctionVolume, threshold: float):
     """
     Returns the electron density clipped to a threshold value.
 
@@ -54,7 +54,7 @@ def clip_density(density: datatypes.WavefunctionVolume, threshold: float):
     np.ndarray, clipped electron density
     """
 
-    electron_density = density.get_density()
+    electron_density = wavefunction.get_density()
 
     dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
     abs_threshold = threshold * dens_range
@@ -77,7 +77,7 @@ def interpolate_grid_function(grid_function: datatypes.WavefunctionVolume, new_r
     assert new_resolution.keys() == grid_function.resolution.keys()
 
     interp = RegularGridInterpolator(
-            [grid_function.density.coords[dim].values for dim in grid_function.density.dims],
+            [grid_function.density.coords[dim].values for dim in grid_function.get_dims()],
             grid_function.density.data,
         )
 
