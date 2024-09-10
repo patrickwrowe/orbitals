@@ -77,8 +77,8 @@ def interpolate_grid_function(grid_function: datatypes.WavefunctionVolume, new_r
     assert new_resolution.keys() == grid_function.resolution.keys()
 
     interp = RegularGridInterpolator(
-            [grid_function.density.coords[dim].values for dim in grid_function.get_dims()],
-            grid_function.density.data,
+            [grid_function.get_coords()[dim].values for dim in grid_function.get_dims()],
+            grid_function.get_wavefunction(),
         )
 
     # e.g. RadialWavefunction or CartesianWavefunction
@@ -87,6 +87,6 @@ def interpolate_grid_function(grid_function: datatypes.WavefunctionVolume, new_r
     # e.g. xx, yy, zz or rr, tt, pp
     c1, c2, c3 = interp_grid.meshgrid_coords()
 
-    interp_grid.density.data = interp((c1, c2, c3))
+    interp_grid.wavefunction.data = interp((c1, c2, c3))
 
     return interp_grid
