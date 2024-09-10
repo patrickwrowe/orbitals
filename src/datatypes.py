@@ -23,6 +23,9 @@ class WavefunctionVolume:
     
     def get_density(self):
         return np.absolute(self.density.data) ** 2
+    
+    def get_wavefunction(self):
+        return self.density.data
 
 
 @attrs.define
