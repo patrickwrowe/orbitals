@@ -12,7 +12,9 @@ class WavefunctionVolume:
     r_max: int = 1
 
     def _normalize(self):
-        self.wavefunction.data = self.wavefunction.data / np.nansum(self.wavefunction.data)
+        self.wavefunction.data = self.wavefunction.data / np.nansum(
+            self.wavefunction.data
+        )
 
     def meshgrid_coords(self):
         return np.meshgrid(
@@ -20,19 +22,19 @@ class WavefunctionVolume:
             self.wavefunction.coords["y"],
             self.wavefunction.coords["z"],
         )
-    
+
     def get_density(self):
         return np.absolute(self.wavefunction.data) ** 2
-    
+
     def get_wavefunction(self):
         return self.wavefunction.data
-    
+
     def get_coords(self):
         return self.wavefunction.coords
-    
+
     def get_dims(self):
         return self.wavefunction.dims
-    
+
     def abs_threshold_from_relative(self, relative_threshold: float):
         dens_range = np.nanmax(self.get_density()) - np.nanmin(self.get_density())
         return relative_threshold * dens_range
