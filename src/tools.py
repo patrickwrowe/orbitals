@@ -90,3 +90,22 @@ def interpolate_grid_function(grid_function: datatypes.WavefunctionVolume, new_r
     interp_grid.wavefunction.data = interp((c1, c2, c3))
 
     return interp_grid
+
+def abs_threshold_from_relative(wavefunction: datatypes.WavefunctionVolume, relative_threshold: float):
+    """
+    Returns the absolute threshold value from a relative threshold value.
+
+    args:
+    wavefunction: datatypes.WavefunctionVolume, wavefunction
+    relative_threshold: float, relative threshold value
+
+    returns:
+    float, absolute threshold value
+    """
+
+    electron_density = wavefunction.get_density()
+
+    dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
+    abs_threshold = relative_threshold * dens_range
+
+    return abs_threshold

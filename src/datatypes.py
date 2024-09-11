@@ -32,6 +32,10 @@ class WavefunctionVolume:
     
     def get_dims(self):
         return self.wavefunction.dims
+    
+    def abs_threshold_from_relative(self, relative_threshold: float):
+        dens_range = np.nanmax(self.get_density()) - np.nanmin(self.get_density())
+        return relative_threshold * dens_range
 
 
 @attrs.define
