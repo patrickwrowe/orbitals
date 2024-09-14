@@ -2,10 +2,10 @@ import numpy as np
 import xarray as xr
 from src import datatypes
 from scipy.interpolate import RegularGridInterpolator
-
+from typing import Tuple
 
 @np.vectorize
-def convert_radial_to_cartesian(r, theta, phi):
+def convert_radial_to_cartesian(r: float, theta: float, phi: float) -> Tuple[float, float, float]:
     """
     Converts radial coordinates to cartesian coordinates.
 
@@ -25,7 +25,7 @@ def convert_radial_to_cartesian(r, theta, phi):
 
 
 @np.vectorize
-def convert_cartesian_to_radial(x, y, z):
+def convert_cartesian_to_radial(x: float, y: float, z: float) -> Tuple[float, float, float]:
     """
     Converts cartesian coordinates to radial coordinates.
 
@@ -44,7 +44,7 @@ def convert_cartesian_to_radial(x, y, z):
     return r, theta, phi
 
 
-def clip_density(wavefunction: datatypes.WavefunctionVolume, threshold: float):
+def clip_density(wavefunction: datatypes.WavefunctionVolume, threshold: float) -> np.ndarray:
     """
     Returns the electron density clipped to a threshold value.
 
@@ -65,7 +65,7 @@ def clip_density(wavefunction: datatypes.WavefunctionVolume, threshold: float):
 
 def interpolate_grid_function(
     grid_function: datatypes.WavefunctionVolume, new_resolution: dict
-):
+) -> np.ndarray:
     """
     Interpolates a grid function to a new resolution. We do this because actually calculating the wavefunction
     at a high resolution is computationally expensive, so we start with a low resolution and interpolate.
@@ -100,7 +100,7 @@ def interpolate_grid_function(
 
 def abs_threshold_from_relative(
     wavefunction: datatypes.WavefunctionVolume, relative_threshold: float
-):
+) -> float:
     """
     Returns the absolute threshold value from a relative threshold value.
 
