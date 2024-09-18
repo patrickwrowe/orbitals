@@ -4,8 +4,11 @@ from src import datatypes
 from scipy.interpolate import RegularGridInterpolator
 from typing import Tuple, Optional
 
+
 @np.vectorize
-def convert_radial_to_cartesian(r: float, theta: float, phi: float) -> Tuple[float, float, float]:
+def convert_radial_to_cartesian(
+    r: float, theta: float, phi: float
+) -> Tuple[float, float, float]:
     """
     Converts radial coordinates to cartesian coordinates.
 
@@ -25,7 +28,9 @@ def convert_radial_to_cartesian(r: float, theta: float, phi: float) -> Tuple[flo
 
 
 @np.vectorize
-def convert_cartesian_to_radial(x: float, y: float, z: float) -> Tuple[float, float, float]:
+def convert_cartesian_to_radial(
+    x: float, y: float, z: float
+) -> Tuple[float, float, float]:
     """
     Converts cartesian coordinates to radial coordinates.
 
@@ -44,7 +49,9 @@ def convert_cartesian_to_radial(x: float, y: float, z: float) -> Tuple[float, fl
     return r, theta, phi
 
 
-def clip_density(wavefunction: datatypes.WavefunctionVolume, threshold: float) -> np.ndarray:
+def clip_density(
+    wavefunction: datatypes.WavefunctionVolume, threshold: float
+) -> np.ndarray:
     """
     Returns the electron density clipped to a threshold value.
 
@@ -119,6 +126,7 @@ def abs_threshold_from_relative(
 
     return abs_threshold
 
+
 def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float]) -> bool:
     """
     args:
@@ -131,9 +139,9 @@ def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float]) -> bool
     assert n > 0
 
     # l must be +ve int or 0, up to n-1
-    assert n-1 >= l >= 0
+    assert n - 1 >= l >= 0
 
-    # m can be +l to -l 
+    # m can be +l to -l
     assert l >= m >= -l
 
     # spin is +/- 0.5
@@ -141,4 +149,3 @@ def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float]) -> bool
         assert np.isclose(np.absolute(s), 0.5)
 
     return True
-
