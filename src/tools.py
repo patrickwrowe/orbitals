@@ -118,3 +118,4 @@ def abs_threshold_from_relative(
     abs_threshold = relative_threshold * dens_range
 
     return abs_threshold
+

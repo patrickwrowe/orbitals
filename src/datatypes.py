@@ -3,8 +3,9 @@ from __future__ import annotations
 import xarray as xr
 import numpy as np
 import attrs
-from src import electron_functions
 
+from src import electron_functions
+from src.definitions import CartesianCoords, RadialCoords
 
 @attrs.define
 class WavefunctionVolume:
@@ -12,32 +13,24 @@ class WavefunctionVolume:
     r_max: int = 1
 
     def _normalize(self):
-        self.wavefunction.data = self.wavefunction.data / np.nansum(
-            self.wavefunction.data
-        )
+        self.wavefunction.data = self.wavefunction.data / np.nansum(self.wavefunction.data)
 
     def meshgrid_coords(self):
         return np.meshgrid(
-            self.wavefunction.coords["x"],
-            self.wavefunction.coords["y"],
-            self.wavefunction.coords["z"],
+            *[coord for coord in self.wavefunction.coords]
         )
-
+    
     def get_density(self):
         return np.absolute(self.wavefunction.data) ** 2
-
+    
     def get_wavefunction(self):
         return self.wavefunction.data
-
+    
     def get_coords(self):
         return self.wavefunction.coords
-
+    
     def get_dims(self):
         return self.wavefunction.dims
-
-    def abs_threshold_from_relative(self, relative_threshold: float):
-        dens_range = np.nanmax(self.get_density()) - np.nanmin(self.get_density())
-        return relative_threshold * dens_range
 
 
 @attrs.define
@@ -62,13 +55,13 @@ class RadialWavefunction(WavefunctionVolume):
         # Radial wavefunction with coords r, phi, psi
         self.wavefunction = xr.DataArray(
             data=np.ones(
-                (self.resolution["r"], self.resolution["theta"], self.resolution["phi"])
+                (self.resolution[RadialCoords.R], self.resolution[RadialCoords.THETA], self.resolution[RadialCoords.PHI])
             ),
-            dims=["r", "theta", "phi"],
+            dims=[RadialCoords.R, RadialCoords.THETA, RadialCoords.PHI],
             coords={
-                "r": np.linspace(0, self.r_max, self.resolution["r"]),
-                "theta": np.linspace(0, 2 * np.pi, self.resolution["theta"]),
-                "phi": np.linspace(0, np.pi, self.resolution["phi"]),
+                RadialCoords.R: np.linspace(0, self.r_max, self.resolution[RadialCoords.R]),
+                RadialCoords.THETA: np.linspace(0, 2 * np.pi, self.resolution[RadialCoords.THETA]),
+                RadialCoords.PHI: np.linspace(0, np.pi, self.resolution[RadialCoords.PHI]),
             },
             attrs={
                 "resolution": self.resolution,
@@ -79,9 +72,9 @@ class RadialWavefunction(WavefunctionVolume):
 
     def eval_wavefunction(self, n: int, l: int, m: int):
         rr, tt, pp = np.meshgrid(
-            self.wavefunction.coords["r"],
-            self.wavefunction.coords["theta"],
-            self.wavefunction.coords["phi"],
+            self.wavefunction.coords[RadialCoords.R],
+            self.wavefunction.coords[RadialCoords.THETA],
+            self.wavefunction.coords[RadialCoords.PHI],
         )
 
         self.wavefunction.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
@@ -111,13 +104,13 @@ class CartesianWavefunction(WavefunctionVolume):
     def __attrs_post_init__(self):
         self.wavefunction = xr.DataArray(
             data=np.ones(
-                (self.resolution["x"], self.resolution["y"], self.resolution["z"])
+                (self.resolution[CartesianCoords.X], self.resolution[CartesianCoords.Y], self.resolution[CartesianCoords.Z])
             ),
-            dims=["x", "y", "z"],
+            dims=[CartesianCoords.X, CartesianCoords.Y, CartesianCoords.Z],
             coords={
-                "x": np.linspace(-self.r_max, self.r_max, self.resolution["x"]),
-                "y": np.linspace(-self.r_max, self.r_max, self.resolution["y"]),
-                "z": np.linspace(-self.r_max, self.r_max, self.resolution["z"]),
+                CartesianCoords.X: np.linspace(-self.r_max, self.r_max, self.resolution[CartesianCoords.X]),
+                CartesianCoords.Y: np.linspace(-self.r_max, self.r_max, self.resolution[CartesianCoords.Y]),
+                CartesianCoords.Z: np.linspace(-self.r_max, self.r_max, self.resolution[CartesianCoords.Z]),
             },
             attrs={
                 "resolution": self.resolution,
@@ -128,9 +121,9 @@ class CartesianWavefunction(WavefunctionVolume):
 
     def eval_wavefunction(self, n: int, l: int, m: int):
         xx, yy, zz = np.meshgrid(
-            self.wavefunction.coords["x"],
-            self.wavefunction.coords["y"],
-            self.wavefunction.coords["z"],
+            self.wavefunction.coords[CartesianCoords.X],
+            self.wavefunction.coords[CartesianCoords.Y],
+            self.wavefunction.coords[CartesianCoords.Z],
         )
 
         rr, tt, pp = electron_functions.convert_cartesian_to_radial(xx, yy, zz)
@@ -138,3 +131,5 @@ class CartesianWavefunction(WavefunctionVolume):
         self.wavefunction.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
 
         self._normalize()
+
+
