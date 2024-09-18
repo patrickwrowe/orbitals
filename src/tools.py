@@ -2,7 +2,7 @@ import numpy as np
 import xarray as xr
 from src import datatypes
 from scipy.interpolate import RegularGridInterpolator
-from typing import Tuple
+from typing import Tuple, Optional
 
 @np.vectorize
 def convert_radial_to_cartesian(r: float, theta: float, phi: float) -> Tuple[float, float, float]:
@@ -118,4 +118,27 @@ def abs_threshold_from_relative(
     abs_threshold = relative_threshold * dens_range
 
     return abs_threshold
+
+def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float]) -> bool:
+    """
+    args:
+        n: int, principle quantum number
+        l: int, azimuthal quantum number
+        m: int, magnetic quantum number
+    """
+
+    # n must be a positive integer
+    assert n > 0
+
+    # l must be +ve int or 0, up to n-1
+    assert n-1 >= l >= 0
+
+    # m can be +l to -l 
+    assert l >= m >= -l
+
+    # spin is +/- 0.5
+    if s:
+        assert np.isclose(np.absolute(s), 0.5)
+
+    return True
 

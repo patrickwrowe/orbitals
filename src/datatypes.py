@@ -6,6 +6,7 @@ import attrs
 
 from src import electron_functions
 from src.definitions import CartesianCoords, RadialCoords
+from src import tools
 
 @attrs.define
 class WavefunctionVolume:
@@ -71,6 +72,10 @@ class RadialWavefunction(WavefunctionVolume):
         self._normalize()
 
     def eval_wavefunction(self, n: int, l: int, m: int):
+
+        # Check that we've been provided with physically meaningful inputs
+        assert tools.validate_quantum_numbers(n, l, m)
+
         rr, tt, pp = np.meshgrid(
             self.wavefunction.coords[RadialCoords.R],
             self.wavefunction.coords[RadialCoords.THETA],
@@ -120,6 +125,10 @@ class CartesianWavefunction(WavefunctionVolume):
         self._normalize()
 
     def eval_wavefunction(self, n: int, l: int, m: int):
+
+        # Check that we've been provided with physically meaningful inputs
+        assert tools.validate_quantum_numbers(n, l, m)
+
         xx, yy, zz = np.meshgrid(
             self.wavefunction.coords[CartesianCoords.X],
             self.wavefunction.coords[CartesianCoords.Y],
