@@ -8,3 +8,4 @@ ToDo:
 - get layered orbitals for elements based on quantum number?
      - Plot in an array something like the periodic table?
 - Plot 2d slices through the centre of the density to plot contour plot properly
+- Use Panda3d to do 3d rendering of orbtials in a 'game-like' mode?
