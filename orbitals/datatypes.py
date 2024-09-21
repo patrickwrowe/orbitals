@@ -14,16 +14,19 @@ class WavefunctionVolume:
     resolution: dict
     r_max: int = 1
 
+    wavefunction: xr.DataArray = attrs.field(init=False)
+
     def _normalize(self):
-        self.wavefunction.data = self.wavefunction.data / np.nansum(
-            self.wavefunction.data
-        )
+        # Normalise so sum of elements is 1
+        self.wavefunction.data /= np.sum(np.abs(self.wavefunction.data))
 
     def meshgrid_coords(self):
-        return np.meshgrid(*[coord for coord in self.wavefunction.coords])
+        return np.meshgrid(*[coord for coord in self.wavefunction.coords.values()])
 
     def get_density(self):
-        return np.absolute(self.wavefunction.data) ** 2
+        density = np.absolute(self.get_wavefunction().data) ** 2
+        density /= np.sum(np.abs(density))
+        return density
 
     def get_wavefunction(self):
         return self.wavefunction.data

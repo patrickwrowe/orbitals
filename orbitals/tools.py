@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import xarray as xr
 from orbitals import datatypes
@@ -150,3 +152,7 @@ def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float]) -> bool
         assert np.isclose(np.absolute(s), 0.5)
 
     return True
+
+def normalize(grid_function: datatypes.WavefunctionVolume, new_resolution: dict) -> datatypes.WavefunctionVolume:
+    # Normalise so sum of elements is 1
+    grid_function = grid_function.get_wavefunction() / np.sum(np.abs(grid_function.get_wavefunction()) ** 2)
