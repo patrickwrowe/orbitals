@@ -72,7 +72,7 @@ def clip_density(
 
 def interpolate_grid_function(
     grid_function: datatypes.WavefunctionVolume, new_resolution: dict
-) -> np.ndarray:
+) -> datatypes.WavefunctionVolume:
     """
     Interpolates a grid function to a new resolution. We do this because actually calculating the wavefunction
     at a high resolution is computationally expensive, so we start with a low resolution and interpolate.
@@ -123,6 +123,7 @@ def abs_threshold_from_relative(
 
     dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
     abs_threshold = relative_threshold * dens_range
+
 
     return abs_threshold
 
