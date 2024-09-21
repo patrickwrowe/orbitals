@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-from src import datatypes
+from orbitals import datatypes
 from scipy.interpolate import RegularGridInterpolator
 from typing import Tuple, Optional
 

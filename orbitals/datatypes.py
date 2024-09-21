@@ -4,9 +4,9 @@ import xarray as xr
 import numpy as np
 import attrs
 
-from src import electron_functions
-from src.definitions import CartesianCoords, RadialCoords
-from src import tools
+from orbitals import electron_functions
+from orbitals.definitions import CartesianCoords, RadialCoords
+from orbitals import tools
 
 
 @attrs.define

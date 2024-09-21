@@ -1,6 +1,6 @@
 import skimage as ski
 
-from src import datatypes, tools
+from orbitals import datatypes, tools
 
 
 def extract_isosurface(

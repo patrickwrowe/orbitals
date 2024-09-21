@@ -1,7 +1,7 @@
 from scipy.sparse import data
 import pytest
 
-from src import datatypes
+from orbitals import datatypes
 
 def test_RadialWavefunction():
     resolution = {"r": 100, "phi": 100, "psi": 100}

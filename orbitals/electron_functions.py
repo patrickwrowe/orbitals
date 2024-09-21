@@ -1,6 +1,6 @@
 import numpy as np
 import scipy
-from src import definitions as d
+from orbitals import definitions as d
 
 
 @np.vectorize(excluded=["n", "l", "m"])

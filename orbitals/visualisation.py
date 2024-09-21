@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-from src import datatypes, analysis
+from orbitals import datatypes, analysis
 
 
 def plot_isosurface(
