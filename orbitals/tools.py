@@ -108,7 +108,7 @@ def interpolate_grid_function(
 
 
 def abs_threshold_from_relative(
-    wavefunction: datatypes.WavefunctionVolume, relative_threshold: float
+    grid_function: np.ndarray, relative_threshold: float
 ) -> float:
     """
     Returns the absolute threshold value from a relative threshold value.
@@ -121,16 +121,16 @@ def abs_threshold_from_relative(
     float, absolute threshold value
     """
 
-    electron_density = wavefunction.get_density()
+    if relative_threshold <= 0 or relative_threshold >= 1:
+        raise ValueError("Relative threshold must be between 0 and 1.")
 
-    dens_range = np.nanmax(electron_density) - np.nanmin(electron_density)
+    dens_range = np.nanmax(grid_function) - np.nanmin(grid_function)
     abs_threshold = relative_threshold * dens_range
-
 
     return abs_threshold
 
 
-def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float]) -> bool:
+def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float] = None) -> bool:
     """
     args:
         n: int, principle quantum number
@@ -152,7 +152,3 @@ def validate_quantum_numbers(n: int, l: int, m: int, s: Optional[float]) -> bool
         assert np.isclose(np.absolute(s), 0.5)
 
     return True
-
-def normalize(grid_function: datatypes.WavefunctionVolume, new_resolution: dict) -> datatypes.WavefunctionVolume:
-    # Normalise so sum of elements is 1
-    grid_function = grid_function.get_wavefunction() / np.sum(np.abs(grid_function.get_wavefunction()) ** 2)
