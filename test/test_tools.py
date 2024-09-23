@@ -1,12 +1,18 @@
 import numpy as np
+from scipy.sparse import data
 import xarray as xa
 import pytest
 from orbitals import tools, datatypes
+from orbitals.definitions import CartesianCoords
 
 @pytest.fixture
 def simple_test_volume():
     test_volume = datatypes.WavefunctionVolume(
-        resolution={'x': 3, 'y': 3, 'z': 3},
+        resolution={
+            CartesianCoords.X: 3, 
+            CartesianCoords.Y: 3, 
+            CartesianCoords.Z: 1
+        },
         r_max=1
     )
 
@@ -22,6 +28,7 @@ def simple_test_volume():
     return test_volume
 
 def test_validate_quantum_numbers():
+    # 1s/2s
     assert tools.validate_quantum_numbers(1, 0, 0) == True # 1s
     assert tools.validate_quantum_numbers(2, 0, 0) == True # 2s
 
@@ -61,8 +68,18 @@ def test_abs_threshold_from_relative(simple_test_volume):
     with pytest.raises(ValueError):
         tools.abs_threshold_from_relative(simple_test_volume, -0.1)
 
-def test_interpolate_grid_function():
-    pass
+def test_interpolate_grid_function(simple_test_volume):
+    new_volume = tools.interpolate_grid_function(
+                simple_test_volume, 
+                new_resolution={CartesianCoords.X: 6, 
+                                CartesianCoords.Y: 6, 
+                                CartesianCoords.Z: 1})
+
+    assert new_volume.get_coords() == {
+        CartesianCoords.X: np.linspace(0, 1, 6),
+        CartesianCoords.Y: np.linspace(0, 1, 6),
+        CartesianCoords.Z: np.linspace(0, 1, 1)
+    }
 
 def test_clip_density():
     pass

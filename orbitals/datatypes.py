@@ -21,7 +21,7 @@ class WavefunctionVolume:
         self.wavefunction.data /= np.sum(np.abs(self.wavefunction.data))
 
     def meshgrid_coords(self):
-        return np.meshgrid(*[coord for coord in self.wavefunction.coords.values()])
+        return np.meshgrid(*[coord for coord in self.get_coords().values()])    
 
     def get_density(self):
         density = np.absolute(self.get_wavefunction().data) ** 2
