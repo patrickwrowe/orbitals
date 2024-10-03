@@ -18,11 +18,11 @@ def plot_isosurface(
     # Fancy indexing: `verts[faces]` to generate a collection of triangles
     mesh = Poly3DCollection(verts[faces])
     mesh.set_edgecolor("k")
-    ax.add_collection3d(mesh)
+    ax.add_collection3d(mesh)  # pyright: ignore
 
     ax.set_xlim(verts.min(), verts.max())
     ax.set_ylim(verts.min(), verts.max())
-    ax.set_zlim(verts.min(), verts.max())
+    ax.set_zlim(verts.min(), verts.max())  # pyright: ignore
 
     plt.tight_layout()
 

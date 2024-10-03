@@ -17,7 +17,9 @@ def extract_isosurface(
     tuple, (vertices, faces) of the isosurface
     """
 
-    abs_threshold = tools.abs_threshold_from_relative(wavefunction, relative_threshold)
+    abs_threshold = tools.abs_threshold_from_relative(
+        wavefunction.get_wavefunction(), relative_threshold
+    )
 
     verts, faces, normals, values = ski.measure.marching_cubes(
         volume=wavefunction.get_density(),
