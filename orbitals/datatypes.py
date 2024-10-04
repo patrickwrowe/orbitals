@@ -41,7 +41,24 @@ class WavefunctionVolume:
 
 
 @attrs.define
-class RadialWavefunction(WavefunctionVolume):
+class OneEAtomicWavefunction(WavefunctionVolume):
+    """
+    Base class for 1-electron atomic wavefunctions.
+    """
+    
+    def get_quantum_numbers(self):
+        return (
+            self.wavefunction.attrs[QuantumNumbers.N],
+            self.wavefunction.attrs[QuantumNumbers.L],
+            self.wavefunction.attrs[QuantumNumbers.M],
+        )
+
+    @classmethod
+    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: int,  n: int, l: int, m: int) -> OneEAtomicWavefunction:
+        raise NotImplementedError
+
+@attrs.define
+class RadialWavefunction(OneEAtomicWavefunction):
     """
     Radial electron wavefunction class.
 
@@ -115,8 +132,9 @@ class RadialWavefunction(WavefunctionVolume):
         self._normalize()
 
 
+
 @attrs.define
-class CartesianWavefunction(WavefunctionVolume):
+class CartesianWavefunction(OneEAtomicWavefunction):
     """
     Cartesian electron wavefunction class.
 

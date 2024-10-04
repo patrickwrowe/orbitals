@@ -73,7 +73,7 @@ def clip_density(
 
 
 def interpolate_grid_function(
-    grid_function: datatypes.WavefunctionVolume, new_resolution: dict
+    grid_function: datatypes.OneEAtomicWavefunction, new_resolution: dict
 ) -> datatypes.WavefunctionVolume:
     """
     Interpolates a grid function to a new resolution. We do this because actually calculating the wavefunction
@@ -94,9 +94,15 @@ def interpolate_grid_function(
         grid_function.get_wavefunction(),
     )
 
+    n, l, m = grid_function.get_quantum_numbers()
+
     # e.g. RadialWavefunction or CartesianWavefunction
-    interp_grid = type(grid_function)(
-        resolution=new_resolution, r_max=grid_function.r_max
+    interp_grid = type(grid_function).new_1e_atomic_wavefunction(
+        resolution=new_resolution,
+        r_max=grid_function.r_max,
+        n=n,
+        l=l,
+        m=m,
     )
 
     # e.g. xx, yy, zz or rr, tt, pp
