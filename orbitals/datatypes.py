@@ -1,11 +1,12 @@
 from __future__ import annotations
+from re import S
 
 import xarray as xr
 import numpy as np
 import attrs
 
 from orbitals import electron_functions
-from orbitals.definitions import CartesianCoords, RadialCoords
+from orbitals.definitions import CartesianCoords, RadialCoords, QuantumNumbers
 from orbitals import tools
 
 
@@ -82,26 +83,22 @@ class RadialWavefunction(WavefunctionVolume):
             },
             attrs={
                 "resolution": resolution,
-                "n": n,
-                "l": l,
-                "m": m,
+                QuantumNumbers.N: n,
+                QuantumNumbers.L: l,
+                QuantumNumbers.M: m,
             },
         )
 
         return cls(wavefunction=wavefunction, resolution=resolution, r_max=r_max)
 
-    def __attrs_post_init__(self):
-        self.eval_wavefunction(
-            self.wavefunction.attrs["n"],
-            self.wavefunction.attrs["l"],
-            self.wavefunction.attrs["m"],
-        )
-        self._normalize()
-
-    def eval_wavefunction(self, n: int, l: int, m: int):
+    def eval_wavefunction(self):
 
         # Check that we've been provided with physically meaningful inputs
-        assert tools.validate_quantum_numbers(n, l, m)
+        assert tools.validate_quantum_numbers(
+            self.wavefunction.attrs[QuantumNumbers.N],
+            self.wavefunction.attrs[QuantumNumbers.L],
+            self.wavefunction.attrs[QuantumNumbers.M],
+        )
 
         rr, tt, pp = np.meshgrid(
             self.wavefunction.coords[RadialCoords.R],
@@ -109,7 +106,11 @@ class RadialWavefunction(WavefunctionVolume):
             self.wavefunction.coords[RadialCoords.PHI],
         )
 
-        self.wavefunction.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
+        self.wavefunction.data = electron_functions.wavefunction(
+            self.wavefunction.attrs[QuantumNumbers.N],
+            self.wavefunction.attrs[QuantumNumbers.L],
+            self.wavefunction.attrs[QuantumNumbers.M],
+            rr, tt, pp)
 
         self._normalize()
 
@@ -157,26 +158,22 @@ class CartesianWavefunction(WavefunctionVolume):
             },
             attrs={
                 "resolution": resolution,
-                "n": n,
-                "l": l,
-                "m": m,
+                QuantumNumbers.N: n,
+                QuantumNumbers.L: l,
+                QuantumNumbers.M: m,
             },
         )
 
         return cls(wavefunction=wavefunction, resolution=resolution, r_max=r_max)
 
-    def __attrs_post_init__(self):
-        self.eval_wavefunction(
-            self.wavefunction.attrs["n"],
-            self.wavefunction.attrs["l"],
-            self.wavefunction.attrs["m"],
-        )
-        self._normalize()
-
-    def eval_wavefunction(self, n: int, l: int, m: int):
+    def eval_wavefunction(self):
 
         # Check that we've been provided with physically meaningful inputs
-        assert tools.validate_quantum_numbers(n, l, m)
+        assert tools.validate_quantum_numbers(
+            self.wavefunction.attrs[QuantumNumbers.N],
+            self.wavefunction.attrs[QuantumNumbers.L],
+            self.wavefunction.attrs[QuantumNumbers.M],
+        )
 
         xx, yy, zz = np.meshgrid(
             self.wavefunction.coords[CartesianCoords.X],
@@ -186,6 +183,11 @@ class CartesianWavefunction(WavefunctionVolume):
 
         rr, tt, pp = tools.convert_cartesian_to_radial(xx, yy, zz)
 
-        self.wavefunction.data = electron_functions.wavefunction(n, l, m, rr, tt, pp)
+        self.wavefunction.data = electron_functions.wavefunction(
+            self.wavefunction.attrs[QuantumNumbers.N],
+            self.wavefunction.attrs[QuantumNumbers.L],
+            self.wavefunction.attrs[QuantumNumbers.M],
+            rr, tt, pp
+        )
 
         self._normalize()

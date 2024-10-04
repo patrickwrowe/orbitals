@@ -14,3 +14,9 @@ class RadialCoords(enum.StrEnum):
     R = enum.auto()
     THETA = enum.auto()
     PHI = enum.auto()
+
+class QuantumNumbers(enum.StrEnum):
+    N = enum.auto()
+    L = enum.auto()
+    M = enum.auto()
+    S = enum.auto()
