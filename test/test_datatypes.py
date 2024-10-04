@@ -6,7 +6,11 @@ from orbitals import datatypes, tools
 
 def test_RadialWavefunction():
     resolution = {"r": 100, "theta": 100, "phi": 100}
-    density = datatypes.RadialWavefunction(resolution=resolution)
+    density = datatypes.RadialWavefunction.new_1e_atomic_wavefunction(
+        resolution=resolution,
+        r_max=1,
+        n=1, l=0, m=0
+    )
     assert density.resolution == resolution
     assert density.wavefunction.shape == (100, 100, 100)
     assert density.wavefunction.dims == ("r", "theta", "phi")
@@ -31,7 +35,11 @@ def test_RadialWavefunction():
 
 def test_CartesianWavefunction():
     resolution = {"x": 100, "y": 100, "z": 100}
-    density = datatypes.CartesianWavefunction(resolution=resolution)
+    density = datatypes.CartesianWavefunction.new_1e_atomic_wavefunction(
+        resolution=resolution,
+        r_max=1,
+        n=1, l=0, m=0
+    )
     assert density.resolution == resolution
     assert density.wavefunction.shape == (100, 100, 100)
     assert density.wavefunction.dims == ("x", "y", "z")

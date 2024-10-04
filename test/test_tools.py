@@ -5,28 +5,6 @@ import pytest
 from orbitals import tools, datatypes
 from orbitals.definitions import CartesianCoords
 
-@pytest.fixture
-def simple_test_volume():
-    test_volume = datatypes.WavefunctionVolume(
-        resolution={
-            CartesianCoords.X: 3, 
-            CartesianCoords.Y: 3, 
-            CartesianCoords.Z: 1
-        },
-        r_max=1
-    )
-
-    test_volume.wavefunction = xa.DataArray(np.array(
-            [
-                [0.05, 0.2, 0.05],
-                [0.2, 0.05, 0.05],
-                [0.3, 0.05, 0.05]
-            ]
-        )
-    )
-
-    return test_volume
-
 def test_validate_quantum_numbers():
     # 1s/2s
     assert tools.validate_quantum_numbers(1, 0, 0) == True # 1s
