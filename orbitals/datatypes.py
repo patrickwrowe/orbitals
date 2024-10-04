@@ -38,10 +38,6 @@ class WavefunctionVolume:
     def get_dims(self):
         return self.wavefunction.dims
 
-    @classmethod
-    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: int,  n: int, l: int, m: int):
-        raise NotImplementedError()
-
 
 @attrs.define
 class RadialWavefunction(WavefunctionVolume):
