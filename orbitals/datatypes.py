@@ -16,16 +16,16 @@ class WavefunctionVolume:
     wavefunction: xr.DataArray
 
     resolution: dict
-    r_max: int
+    r_max: float
 
     def _normalize(self):
         # Normalise so sum of elements is 1
         self.wavefunction.data /= np.sum(np.abs(self.wavefunction.data))
 
-    def meshgrid_coords(self):
+    def meshgrid_coords(self) -> list[np.ndarray]:
         return np.meshgrid(*[coord for coord in self.get_coords().values()])
 
-    def get_density(self):
+    def get_density(self) -> np.ndarray:
         density = np.absolute(self.get_wavefunction().data) ** 2
         density /= np.sum(np.abs(density))
         return density
@@ -54,7 +54,7 @@ class OneEAtomicWavefunction(WavefunctionVolume):
         )
 
     @classmethod
-    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: int,  n: int, l: int, m: int) -> OneEAtomicWavefunction:
+    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: float,  n: int, l: int, m: int) -> OneEAtomicWavefunction:
         raise NotImplementedError
 
 @attrs.define
@@ -71,7 +71,7 @@ class RadialWavefunction(OneEAtomicWavefunction):
     """
 
     @classmethod
-    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: int,  n: int, l: int, m: int) -> RadialWavefunction:
+    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: float,  n: int, l: int, m: int) -> RadialWavefunction:
 
         # Check that we've been provided with physically meaningful inputs
         assert tools.validate_quantum_numbers(n, l, m)
@@ -131,33 +131,6 @@ class RadialWavefunction(OneEAtomicWavefunction):
 
         self._normalize()
 
-    def to_cartesian(self):
-        """
-        Convert the radial wavefunction to a Cartesian wavefunction.
-        """
-        # Create a new CartesianWavefunction with the same resolution and r_max
-        cartesian_wavefunction = CartesianWavefunction.new_1e_atomic_wavefunction(
-            resolution=self.resolution,
-            r_max=self.r_max,
-            n=self.get_quantum_numbers()[0],
-            l=self.get_quantum_numbers()[1],
-            m=self.get_quantum_numbers()[2]
-        )
-
-        # Convert the radial coordinates to Cartesian coordinates
-        xx, yy, zz = np.meshgrid(
-            self.wavefunction.coords[RadialCoords.R],
-            self.wavefunction.coords[RadialCoords.THETA],
-            self.wavefunction.coords[RadialCoords.PHI]
-        )
-
-        cartesian_wavefunction.wavefunction.data = tools.convert_radial_to_cartesian(
-            self.wavefunction.data, xx, yy, zz
-        )
-
-        return cartesian_wavefunction
-
-
 
 @attrs.define
 class CartesianWavefunction(OneEAtomicWavefunction):
@@ -179,7 +152,7 @@ class CartesianWavefunction(OneEAtomicWavefunction):
     # wavefunction = attrs.field(init=False)
 
     @classmethod
-    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: int,  n: int, l: int, m: int) -> CartesianWavefunction:
+    def new_1e_atomic_wavefunction(cls, resolution: dict, r_max: float,  n: int, l: int, m: int) -> CartesianWavefunction:
         wavefunction = xr.DataArray(
             data=np.ones(
                 (
@@ -235,29 +208,3 @@ class CartesianWavefunction(OneEAtomicWavefunction):
         )
 
         self._normalize()
-
-    def to_radial(self):
-        """
-        Convert the Cartesian wavefunction to a radial wavefunction.
-        """
-        # Create a new RadialWavefunction with the same resolution and r_max
-        radial_wavefunction = RadialWavefunction.new_1e_atomic_wavefunction(
-            resolution=self.resolution,
-            r_max=self.r_max,
-            n=self.get_quantum_numbers()[0],
-            l=self.get_quantum_numbers()[1],
-            m=self.get_quantum_numbers()[2]
-        )
-
-        # Convert the Cartesian coordinates to radial coordinates
-        xx, yy, zz = np.meshgrid(
-            self.wavefunction.coords[CartesianCoords.X],
-            self.wavefunction.coords[CartesianCoords.Y],
-            self.wavefunction.coords[CartesianCoords.Z]
-        )
-
-        radial_wavefunction.wavefunction.data = tools.convert_cartesian_to_radial(
-            self.wavefunction.data, xx, yy, zz
-        )
-
-        return radial_wavefunction

@@ -106,7 +106,9 @@ def interpolate_grid_function(
     )
 
     # e.g. xx, yy, zz or rr, tt, pp
-    c1, c2, c3 = interp_grid.meshgrid_coords()
+    # WOAH! Look out: meshgrid rotates the axes, so we need to be careful here.
+    # c2 and c1 are swapped
+    c2, c1, c3 = interp_grid.meshgrid_coords()
 
     interp_grid.wavefunction.data = interp((c1, c2, c3))
 
