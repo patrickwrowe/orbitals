@@ -1,121 +1,156 @@
-# Plotting Atomis Orbitals with Xarray and Matplotlib
+# Plotting Atomic Orbitals with Xarray and Matplotlib
 
-This project implements a fast and efficient way to compute and visualize atomic orbitals using Python. Under the hood, it uses Xarray for data handling, with vectorized operations for performance, and Matplotlib for visualization.
+This project implements a fast and efficient way to compute and visualize atomic orbitals using Python. Under the hood, it uses Xarray for data handling with vectorized operations for performance, and Matplotlib for visualization.
+
+## Features
+
+- Compute single-electron atomic wavefunctions with arbitrary quantum numbers
+- Efficient evaluation using vectorized operations
+- Support for both Cartesian and spherical coordinate systems
+- 3D interpolation for high-quality visualizations at minimal computational cost
+- Multiple visualization methods: point clouds and isosurfaces
+- Marching cubes algorithm for smooth isosurface rendering
 
 
-## Plotting single electron atomic orbitals. {#plotting-single-electron-atomic-orbitals}
+## Computing Single-Electron Atomic Orbitals
 
-We can straightforwardly compute the wavefunction for a single electron
-atomic orbital, such as the 2p orbital, by specifying the quantum
-numbers `n`, `l`, and `m`. We can then visualise the desnity associated
-with this wavefunction in 3D. We have two simple functions to do this,
-one which will plot the individual points (of the grid on which the
-wavefunction is evaluated) and one which will use the marching cubes
-algorithm to plot an isosurface.
+We can compute the wavefunction for single-electron atomic orbitals, such as the 2p orbital, by specifying the quantum numbers `n`, `l`, and `m`. The associated probability density can then be visualized in 3D using two main approaches:
 
-These wavefunctions can be evaluated and plotted in either Cartesian or
-spherical coordinates, depending on the desire of the user, by beginning
-with the appropriate `Wavefunction` object. Either
-`datatypes.CartesianWavefunction` or `datatypes.RadialWavefunction`.
-Both classes implement the same interface, so the user can choose which
-one they prefer, though for plotting purposes, the Cartesian
-wavefunction is more convenient.
+1. **Point cloud visualization** - Plots individual grid points where the wavefunction is evaluated
+2. **Isosurface visualization** - Uses the marching cubes algorithm to render smooth surfaces
 
-Evaluating the wavefunction is done by calling the `eval_wavefunction`
-method on the `Wavefunction` object, which will compute the wavefunction
-on a grid of points. This can be expensive for higher resolutions, so
-this code also implements 3D interpolation. This allows the user to
-evaluate the wavefunction on a coarse grid and then interpolate to a
-finer grid for plotting.
+### Coordinate Systems
 
-``` python
-# We must specify the resolution of the grid on which we evaluate the wavefunction.
-# This is the number of points in each dimension (x, y, z).
-# The `r_max` parameter specifies the maximum radius from the origin at which we evaluate the wavefunction.
-# The quantum numbers `n`, `l`, and `m` specify the orbital we want to compute.
+Wavefunctions can be evaluated and plotted in either Cartesian or spherical coordinates by choosing the appropriate `Wavefunction` object:
 
-# NOTE: This becomes expensive for higher resolutions. Below, I'll show a convenient function fo r
+- `datatypes.CartesianWavefunction` - More convenient for plotting purposes
+- `datatypes.RadialWavefunction` - Alternative spherical coordinate implementation
+
+Both classes implement the same interface, allowing users to choose based on their preferences.
+
+### Performance Optimization
+
+Wavefunction evaluation is performed by calling the `eval_wavefunction()` method, which computes values on a grid of points. For higher resolutions, this can be computationally expensive. To address this, the code implements efficient 3D interpolation, allowing users to:
+
+1. Evaluate the wavefunction on a coarse grid (fast)
+2. Interpolate to a finer grid for high-quality plotting (minimal overhead)
+
+### Basic Example: Computing a 2p Orbital
+
+```python
+# Import required modules
+from orbitals import datatypes, visualisation, tools
+
+# Specify the resolution of the grid for wavefunction evaluation
+# This defines the number of points in each dimension (x, y, z)
 resolution = {"x": 20, "y": 20, "z": 20}
+
+# Create wavefunction object for the 2p orbital (n=2, l=1, m=0)
+# r_max specifies the maximum radius from the origin for evaluation
 wavefunction = datatypes.CartesianWavefunction.new_1e_atomic_wavefunction(
     resolution=resolution,
     r_max=3,
-    n=2, l=1, m=0
+    n=2, l=1, m=0  # Quantum numbers for 2p_z orbital
 )
+
+# Evaluate the wavefunction on the grid
 wavefunction.eval_wavefunction()
 ```
 
-### Plotting the raw values on a coarse grid. {#plotting-the-raw-values-on-a-coarse-grid}
+> **Note:** Higher resolutions significantly increase computation time. The interpolation method shown below provides a more efficient approach for high-quality visualizations.
 
-``` python
+### Visualizing on a Coarse Grid
 
+```python
+# Plot the wavefunction using point cloud visualization
 fig, ax = visualisation.plot_clipped_points(
     wavefunction, 
     threshold=0.3,
 )
 ```
 
-![](./img/p-orbital-coarse.png)
+![2p orbital on coarse grid](./img/p-orbital-coarse.png)
 
-### This looks fine, but we can do a better job by interpolating the wavefunction to a finer grid before plotting. 
+### High-Quality Visualization Using Interpolation
 
-Interpolating the wavefunction to a finer grid, returns a new
-`Wavefunction` object with the same properties as the original, but with
-a finer grid.
+For better visual quality, we can interpolate the wavefunction to a finer grid. This approach is computationally efficient since interpolation is much faster than direct evaluation on a high-resolution grid.
 
-``` python
-# This looks fine, but we can do a better job by interpolating the wavefunction to a finer grid before plotting.
+```python
+# Interpolate to a finer grid for improved visualization quality
+# The interpolation is nearly instantaneous compared to direct evaluation
+highres_wavefunction = tools.interpolate_grid_function(
+    wavefunction, 
+    new_resolution={'x': 50, 'y': 50, 'z': 50}
+)
 
-# Interpolating the wavefunction to a finer grid, returns a new `Wavefunction` object with the same properties as the original, but with a finer grid.
-# The interpolation is so quick as to be effectively free compared to evaluating the wavefunction on the new grid,
-# But do be cautious, because relying too heavily on it may lead to inaccuracies in downstream calculations (e.g. energy calculations).
-highres_wavefunction = tools.interpolate_grid_function(wavefunction, new_resolution={'x': 50, 'y': 50, 'z': 50})
-
-# Most of the time spent here is actually on visualisation, not on the interpolation.
+# Plot the high-resolution wavefunction
+# Note: Most computation time is spent on visualization, not interpolation
 fig, ax = visualisation.plot_clipped_points(
     highres_wavefunction, 
     threshold=0.5,
-    alpha=0.2,  # Make the points semi-transparent at higher density
+    alpha=0.2,  # Semi-transparent points for better visibility at high density
 )
 ```
 
-![](./img/p-orbital-fine.png)
+![2p orbital on fine grid](./img/p-orbital-fine.png)
 
-## Visualising the wavefunction with just the isosurface. {#visualising-the-wavefunction-with-just-the-isosurface}
+> **Warning:** While interpolation is excellent for visualization, be cautious when using interpolated data for quantitative calculations (e.g., energy computations) as it may introduce inaccuracies.
 
-We can use the `plot_isosurface` function to plot the isosurface of the
-wavefunction. This function uses the marching cubes algorithm to extract
-the isosurface from the wavefunction and then plots it. The isosurface
-is defined by a threshold value.
+## Isosurface Visualization
 
-``` python
+The `plot_isosurface` function provides an alternative visualization method using the marching cubes algorithm. This creates smooth surfaces representing constant probability density values, offering a cleaner and more intuitive view of orbital shapes.
+
+```python
+# Create an isosurface plot
 visualisation.plot_isosurface(
     highres_wavefunction, 
     relative_threshold=0.4,
 )
 ```
 
-![](./img/p-orbital-isosurface.png)
+![2p orbital isosurface](./img/p-orbital-isosurface.png)
 
-## Plotting other orbitals.
+## Examples: Other Orbital Types
 
-For example, we can plot the 3d orbital for the 4d orbital by specifying
-the quantum numbers `n=4`, `l=2`, and `m=0` to plot the dz2 orbital.
+### 4d_z² Orbital
 
+The same workflow can be applied to visualize any atomic orbital. Here's an example of the 4d_z² orbital (n=4, l=2, m=0):
 
-``` python
+```python
+# Create a 4d_z² orbital with larger spatial extent
 resolution = {"x": 20, "y": 20, "z": 20}
 dz2_wavefunction = datatypes.CartesianWavefunction.new_1e_atomic_wavefunction(
     resolution=resolution,
-    r_max=5,
-    n=4, l=2, m=0
+    r_max=5,  # Larger radius needed for 4d orbitals
+    n=4, l=2, m=0  # Quantum numbers for 4d_z² orbital
 )
+
+# Evaluate and interpolate for high-quality visualization
 dz2_wavefunction.eval_wavefunction()
-dz2_highres_wavefunction = tools.interpolate_grid_function(dz2_wavefunction, new_resolution={'x': 50, 'y': 50, 'z': 50})
+dz2_highres_wavefunction = tools.interpolate_grid_function(
+    dz2_wavefunction, 
+    new_resolution={'x': 50, 'y': 50, 'z': 50}
+)
+
+# Visualize as isosurface
 visualisation.plot_isosurface(
     dz2_highres_wavefunction, 
-    relative_threshold=0.1,
+    relative_threshold=0.1,  # Lower threshold for d orbitals
 )
 ```
 
+![4d_z² orbital isosurface](img/dz2-orbital-isosurface.png)
 
-![](img/dz2-orbital-isosurface.png)
+## Quantum Number Reference
+
+| Quantum Number | Symbol | Description | Example Values |
+|---------------|--------|-------------|----------------|
+| Principal | n | Energy level/shell | 1, 2, 3, 4, ... |
+| Azimuthal | l | Orbital angular momentum | 0 (s), 1 (p), 2 (d), 3 (f) |
+| Magnetic | m | Orbital orientation | -l, -l+1, ..., 0, ..., l-1, l |
+
+### Common Orbital Examples
+- **1s**: n=1, l=0, m=0
+- **2p_z**: n=2, l=1, m=0  
+- **3d_z²**: n=3, l=2, m=0
+- **4f**: n=4, l=3, m=0 (or ±1, ±2, ±3)
