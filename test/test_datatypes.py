@@ -1,6 +1,9 @@
 from scipy.sparse import data
 import numpy as np
 import pytest
+import sys
+
+sys.path.append("..")  # Adjust the path to import from the parent directory
 
 from orbitals import datatypes, tools
 

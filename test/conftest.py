@@ -1,4 +1,9 @@
 import pytest
+
+import sys
+
+sys.path.append("..")  # Adjust the path to import from the parent directory
+
 from orbitals import datatypes
 from orbitals.definitions import CartesianCoords, RadialCoords
 

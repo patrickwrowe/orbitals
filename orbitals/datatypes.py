@@ -131,6 +131,32 @@ class RadialWavefunction(OneEAtomicWavefunction):
 
         self._normalize()
 
+    def to_cartesian(self):
+        """
+        Convert the radial wavefunction to a Cartesian wavefunction.
+        """
+        # Create a new CartesianWavefunction with the same resolution and r_max
+        cartesian_wavefunction = CartesianWavefunction.new_1e_atomic_wavefunction(
+            resolution=self.resolution,
+            r_max=self.r_max,
+            n=self.get_quantum_numbers()[0],
+            l=self.get_quantum_numbers()[1],
+            m=self.get_quantum_numbers()[2]
+        )
+
+        # Convert the radial coordinates to Cartesian coordinates
+        xx, yy, zz = np.meshgrid(
+            self.wavefunction.coords[RadialCoords.R],
+            self.wavefunction.coords[RadialCoords.THETA],
+            self.wavefunction.coords[RadialCoords.PHI]
+        )
+
+        cartesian_wavefunction.wavefunction.data = tools.convert_radial_to_cartesian(
+            self.wavefunction.data, xx, yy, zz
+        )
+
+        return cartesian_wavefunction
+
 
 
 @attrs.define
@@ -209,3 +235,29 @@ class CartesianWavefunction(OneEAtomicWavefunction):
         )
 
         self._normalize()
+
+    def to_radial(self):
+        """
+        Convert the Cartesian wavefunction to a radial wavefunction.
+        """
+        # Create a new RadialWavefunction with the same resolution and r_max
+        radial_wavefunction = RadialWavefunction.new_1e_atomic_wavefunction(
+            resolution=self.resolution,
+            r_max=self.r_max,
+            n=self.get_quantum_numbers()[0],
+            l=self.get_quantum_numbers()[1],
+            m=self.get_quantum_numbers()[2]
+        )
+
+        # Convert the Cartesian coordinates to radial coordinates
+        xx, yy, zz = np.meshgrid(
+            self.wavefunction.coords[CartesianCoords.X],
+            self.wavefunction.coords[CartesianCoords.Y],
+            self.wavefunction.coords[CartesianCoords.Z]
+        )
+
+        radial_wavefunction.wavefunction.data = tools.convert_cartesian_to_radial(
+            self.wavefunction.data, xx, yy, zz
+        )
+
+        return radial_wavefunction
