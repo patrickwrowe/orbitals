@@ -2,6 +2,9 @@
 
 This project implements a fast and efficient way to compute and visualize atomic orbitals using Python. Under the hood, it uses Xarray for data handling with vectorized operations for performance, and Matplotlib for visualization.
 
+## Quickstart:
+- **Check out experiment.ipynb for an interactive demonstration.**
+
 ## Features
 
 - Compute single-electron atomic wavefunctions with arbitrary quantum numbers
@@ -14,17 +17,14 @@ This project implements a fast and efficient way to compute and visualize atomic
 
 ## Computing Single-Electron Atomic Orbitals
 
-We can compute the wavefunction for single-electron atomic orbitals, such as the 2p orbital, by specifying the quantum numbers `n`, `l`, and `m`. The associated probability density can then be visualized in 3D using two main approaches:
-
-1. **Point cloud visualization** - Plots individual grid points where the wavefunction is evaluated
-2. **Isosurface visualization** - Uses the marching cubes algorithm to render smooth surfaces
+We can compute the wavefunction for single-electron atomic orbitals, such as the 2p orbital, by specifying the quantum numbers `n`, `l`, and `m`. The associated probability density can then be visualized in 3D using either point cloud visualization, (plots individual grid points where the wavefunction is evaluated) or isosurface visualization, where we make use of the marching cubes algorithm to render smooth surfaces.
 
 ### Coordinate Systems
 
 Wavefunctions can be evaluated and plotted in either Cartesian or spherical coordinates by choosing the appropriate `Wavefunction` object:
 
 - `datatypes.CartesianWavefunction` - More convenient for plotting purposes
-- `datatypes.RadialWavefunction` - Alternative spherical coordinate implementation
+- `datatypes.RadialWavefunction` - Alternative spherical coordinate implementation, possibly more natural for downstream calculations with physical meaning.
 
 Both classes implement the same interface, allowing users to choose based on their preferences.
 
@@ -32,8 +32,8 @@ Both classes implement the same interface, allowing users to choose based on the
 
 Wavefunction evaluation is performed by calling the `eval_wavefunction()` method, which computes values on a grid of points. For higher resolutions, this can be computationally expensive. To address this, the code implements efficient 3D interpolation, allowing users to:
 
-1. Evaluate the wavefunction on a coarse grid (fast)
-2. Interpolate to a finer grid for high-quality plotting (minimal overhead)
+1. Evaluate the wavefunction on a coarse grid (fast, but accurate, better for energy calculations etc)
+2. Interpolate to a finer grid for high-quality plotting (minimal overhead, possible deviation from true density so caution advised.)
 
 ### Basic Example: Computing a 2p Orbital
 
