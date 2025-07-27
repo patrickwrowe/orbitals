@@ -75,7 +75,7 @@ class RadialWavefunction(OneEAtomicWavefunction):
 
         # Check that we've been provided with physically meaningful inputs
         assert tools.validate_quantum_numbers(n, l, m)
-        assert resolution.keys() == RadialCoords
+        assert set(resolution.keys()) == set(RadialCoords)
 
         # Radial wavefunction with coords r, phi, psi
         wavefunction = xr.DataArray(
